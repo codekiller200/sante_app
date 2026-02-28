@@ -59,17 +59,17 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          // Header bleu marine
-          const AuthHeader(
-            title: 'Bon retour ! 👋',
-            subtitle: 'Connectez-vous pour accéder à vos traitements',
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Header bleu marine
+            const AuthHeader(
+              title: 'Bon retour ! 👋',
+              subtitle: 'Connectez-vous pour accéder à vos traitements',
+            ),
 
-          // Formulaire
-          Expanded(
-            child: SingleChildScrollView(
+            // Formulaire
+            Padding(
               padding: const EdgeInsets.all(24),
               child: Form(
                 key: _formKey,
@@ -209,8 +209,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

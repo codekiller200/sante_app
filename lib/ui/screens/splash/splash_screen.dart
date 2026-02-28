@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/notification_service.dart';
+import '../../../services/alarm_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -19,6 +22,7 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _fadeAnim;
   late Animation<double> _scaleAnim;
   double _progress = 0.0;
+  bool _alarmDialogShown = false;
 
   @override
   void initState() {
@@ -40,7 +44,16 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _startLoading() async {
     // Simulation du chargement progressif
-    for (int i = 1; i <= 10; i++) {
+    for (int i = 1; i <= 5; i++) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      if (mounted) setState(() => _progress = i / 10);
+    }
+
+    // Demander les permissions de notification
+    await _requestPermissions();
+
+    // Reprendre le chargement
+    for (int i = 6; i <= 10; i++) {
       await Future.delayed(const Duration(milliseconds: 200));
       if (mounted) setState(() => _progress = i / 10);
     }
@@ -55,6 +68,151 @@ class _SplashScreenState extends State<SplashScreen>
     } else {
       context.go(AppRoutes.login);
     }
+  }
+
+  Future<void> _requestPermissions() async {
+    final notificationService = NotificationService.instance;
+    final granted = await notificationService.requestPermissions();
+
+    if (!mounted) return;
+
+    if (!granted) {
+      _showNotificationPermissionDialog();
+    } else {
+      // Permissions accordées - vérifier si les alarmes exactes sont activées
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted && !_alarmDialogShown) {
+        _showAlarmPermissionDialog();
+      }
+    }
+  }
+
+  void _showNotificationPermissionDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: true, // Permet à l'utilisateur de fermer
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Text('🔔', style: TextStyle(fontSize: 24)),
+            SizedBox(width: 10),
+            Text('Notifications'),
+          ],
+        ),
+        content: const Text(
+          'Pour recevoir vos rappels de médicaments à l\'heure, '
+          'veuillex autoriser les notifications.\n\n'
+          'Allez dans:\n'
+          'Paramètres > Notifications > MediRemind > Autoriser',
+          style: TextStyle(fontSize: 14, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showAlarmPermissionDialog();
+            },
+            child: const Text('Plus tard'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await NotificationService.instance.requestPermissions();
+              if (mounted) {
+                _showAlarmPermissionDialog();
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.blue700,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Autoriser'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAlarmPermissionDialog() {
+    _alarmDialogShown = true;
+
+    showDialog(
+      context: context,
+      barrierDismissible: true, // Permet à l'utilisateur de fermer lui-même
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Text('⏰', style: TextStyle(fontSize: 24)),
+            SizedBox(width: 10),
+            Text('Alarmes exactes'),
+          ],
+        ),
+        content: const Text(
+          'Pour que les rappels sonnent à l\'HEURE EXACTE, '
+          'vous devez activer les alarmes exactes.\n\n'
+          '📱 étapes à suivre:\n\n'
+          '1. Ouvrez Paramètres Android\n'
+          '2. Cherchez "Apps" ou "Applications"\n'
+          '3. Trouvez MediRemind\n'
+          '4. Appuyez sur "Permissions"\n'
+          '5. Cherchez "Alarmes et minuteurs"\n'
+          '6. Activez l\'autorisation\n\n'
+          '⚠️ Cette autorisation est DIFFERENTE de la permission de notification!',
+          style: TextStyle(fontSize: 13, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Envoyer notification test
+              NotificationService.instance.afficherImmediatement(
+                titre: '✅ Notifications prêtes',
+                corps: 'Vous recevrez vos rappels de médicaments',
+              );
+            },
+            child: const Text('Plus tard'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+
+              // Copier les paramètres dans le presse-papier
+              await Clipboard.setData(const ClipboardData(
+                text:
+                    'Paramètres > Apps > MediRemind > Permissions > Alarmes et minuteurs',
+              ));
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content:
+                        Text('📋 Chemin copié! Collez-le dans les paramètres.'),
+                    backgroundColor: AppColors.blue700,
+                  ),
+                );
+              }
+
+              // Envoyer notification test
+              NotificationService.instance.afficherImmediatement(
+                titre: '⏰ Prêt pour les rappels',
+                corps: 'Vos alarmes fonctionneront une fois autorisées',
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.orange,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Copier le chemin'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -160,9 +318,9 @@ class _SplashScreenState extends State<SplashScreen>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'Chargement…',
-                            style: TextStyle(
+                          Text(
+                            _progress < 0.5 ? 'Chargement…' : 'Configuration…',
+                            style: const TextStyle(
                               color: Colors.white38,
                               fontSize: 12,
                               fontFamily: 'DM Mono',

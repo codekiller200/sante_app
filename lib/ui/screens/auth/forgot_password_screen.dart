@@ -17,10 +17,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   int _etape = 1; // 1, 2, 3, 4 (succès)
   int _tentatives = 3;
 
-  final _usernameController    = TextEditingController();
-  final _reponseController     = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _reponseController = TextEditingController();
   final _newPasswordController = TextEditingController();
-  final _confirmController     = TextEditingController();
+  final _confirmController = TextEditingController();
 
   String? _errorMessage;
   String? _usernameValide;
@@ -41,14 +41,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _verifierUsername() async {
     final username = _usernameController.text.trim();
     if (username.isEmpty) {
-      setState(() => _errorMessage = 'Veuillez entrer votre nom d\'utilisateur.');
+      setState(
+          () => _errorMessage = 'Veuillez entrer votre nom d\'utilisateur.');
       return;
     }
 
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     final result = await context.read<AuthService>().verifierUsername(username);
-    final question = await context.read<AuthService>().getSecretQuestion(username);
+    final question =
+        await context.read<AuthService>().getSecretQuestion(username);
 
     if (!mounted) return;
 
@@ -75,17 +80,23 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       return;
     }
 
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     final result = await context.read<AuthService>().verifierReponseSecrete(
-      username: _usernameValide!,
-      reponse: reponse,
-    );
+          username: _usernameValide!,
+          reponse: reponse,
+        );
 
     if (!mounted) return;
 
     if (result.success) {
-      setState(() { _etape = 3; _isLoading = false; });
+      setState(() {
+        _etape = 3;
+        _isLoading = false;
+      });
     } else {
       _tentatives--;
       setState(() {
@@ -111,17 +122,23 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       return;
     }
 
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     final result = await context.read<AuthService>().reinitialiserMotDePasse(
-      username: _usernameValide!,
-      nouveauPassword: newPwd,
-    );
+          username: _usernameValide!,
+          nouveauPassword: newPwd,
+        );
 
     if (!mounted) return;
 
     if (result.success) {
-      setState(() { _etape = 4; _isLoading = false; });
+      setState(() {
+        _etape = 4;
+        _isLoading = false;
+      });
     } else {
       setState(() {
         _errorMessage = result.errorMessage;
@@ -133,25 +150,35 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          // Header
-          _buildHeader(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Header
+            _buildHeader(),
 
-          // Contenu selon l'étape
-          Expanded(
-            child: _etape == 4 ? _buildSucces() : _buildForm(),
-          ),
-        ],
+            // Contenu selon l'étape
+            _etape == 4 ? _buildSucces() : _buildForm(),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildHeader() {
-    final titles = ['', 'Mot de passe\noublié ?', 'Question\nsecrète', 'Nouveau\nmot de passe', ''];
-    final subs   = ['', 'Récupération 100% locale, aucune connexion nécessaire.',
-                    'Compte trouvé : ${_usernameValide ?? ""}',
-                    'Choisissez un mot de passe sécurisé.', ''];
+    final titles = [
+      '',
+      'Mot de passe\noublié ?',
+      'Question\nsecrète',
+      'Nouveau\nmot de passe',
+      ''
+    ];
+    final subs = [
+      '',
+      'Récupération 100% locale, aucune connexion nécessaire.',
+      'Compte trouvé : ${_usernameValide ?? ""}',
+      'Choisissez un mot de passe sécurisé.',
+      ''
+    ];
 
     return Container(
       decoration: const BoxDecoration(
@@ -174,7 +201,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     if (_etape == 1) {
                       context.go(AppRoutes.login);
                     } else {
-                      setState(() { _etape--; _errorMessage = null; });
+                      setState(() {
+                        _etape--;
+                        _errorMessage = null;
+                      });
                     }
                   },
                   child: Container(
@@ -184,7 +214,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       color: Colors.white12,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.arrow_back, color: Colors.white, size: 18),
+                    child: const Icon(Icons.arrow_back,
+                        color: Colors.white, size: 18),
                   ),
                 ),
               if (_etape < 4) const SizedBox(height: 14),
@@ -252,9 +283,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         const SizedBox(height: 6),
         const Row(
           children: [
-            Expanded(child: Text('Username', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.gray400, fontWeight: FontWeight.w600))),
-            Expanded(child: Text('Question', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.gray400, fontWeight: FontWeight.w600))),
-            Expanded(child: Text('Nouveau MDP', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.gray400, fontWeight: FontWeight.w600))),
+            Expanded(
+                child: Text('Username',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.gray400,
+                        fontWeight: FontWeight.w600))),
+            Expanded(
+                child: Text('Question',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.gray400,
+                        fontWeight: FontWeight.w600))),
+            Expanded(
+                child: Text('Nouveau MDP',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.gray400,
+                        fontWeight: FontWeight.w600))),
           ],
         ),
       ],
@@ -265,9 +314,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _InfoBox(text: 'Entrez votre nom d\'utilisateur pour retrouver votre compte. Vos données restent sur votre téléphone.'),
+        const _InfoBox(
+            text:
+                'Entrez votre nom d\'utilisateur pour retrouver votre compte. Vos données restent sur votre téléphone.'),
         const SizedBox(height: 16),
-        const Text('Nom d\'utilisateur', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.gray600)),
+        const Text('Nom d\'utilisateur',
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray600)),
         const SizedBox(height: 6),
         TextFormField(
           controller: _usernameController,
@@ -279,9 +334,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        _PrimaryButton(label: 'Vérifier →', isLoading: _isLoading, onTap: _verifierUsername),
+        _PrimaryButton(
+            label: 'Vérifier →',
+            isLoading: _isLoading,
+            onTap: _verifierUsername),
         const SizedBox(height: 16),
-        _SwitchLink(text: 'Vous vous souvenez ? ', linkText: 'Se connecter', onTap: () => context.go(AppRoutes.login)),
+        _SwitchLink(
+            text: 'Vous vous souvenez ? ',
+            linkText: 'Se connecter',
+            onTap: () => context.go(AppRoutes.login)),
       ],
     );
   }
@@ -290,9 +351,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _InfoBox(text: 'Répondez à votre question secrète choisie lors de l\'inscription.'),
+        const _InfoBox(
+            text:
+                'Répondez à votre question secrète choisie lors de l\'inscription.'),
         const SizedBox(height: 16),
-        const Text('Votre question secrète', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.gray600)),
+        const Text('Votre question secrète',
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray600)),
         const SizedBox(height: 6),
         Container(
           width: double.infinity,
@@ -308,7 +375,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
         ),
         const SizedBox(height: 14),
-        const Text('Votre réponse', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.gray600)),
+        const Text('Votre réponse',
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray600)),
         const SizedBox(height: 6),
         TextFormField(
           controller: _reponseController,
@@ -320,9 +391,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        _PrimaryButton(label: 'Vérifier la réponse →', isLoading: _isLoading, onTap: _tentatives > 0 ? _verifierReponse : null),
+        _PrimaryButton(
+            label: 'Vérifier la réponse →',
+            isLoading: _isLoading,
+            onTap: _tentatives > 0 ? _verifierReponse : null),
         const SizedBox(height: 16),
-        _SwitchLink(text: 'Vous vous souvenez ? ', linkText: 'Se connecter', onTap: () => context.go(AppRoutes.login)),
+        _SwitchLink(
+            text: 'Vous vous souvenez ? ',
+            linkText: 'Se connecter',
+            onTap: () => context.go(AppRoutes.login)),
       ],
     );
   }
@@ -331,7 +408,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Nouveau mot de passe', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.gray600)),
+        const Text('Nouveau mot de passe',
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray600)),
         const SizedBox(height: 6),
         TextFormField(
           controller: _newPasswordController,
@@ -341,13 +422,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             prefixIcon: const Icon(Icons.lock_outline),
             hintText: '••••••••',
             suffixIcon: IconButton(
-              icon: Icon(_passwordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined),
-              onPressed: () => setState(() => _passwordVisible = !_passwordVisible),
+              icon: Icon(_passwordVisible
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined),
+              onPressed: () =>
+                  setState(() => _passwordVisible = !_passwordVisible),
             ),
           ),
         ),
         const SizedBox(height: 14),
-        const Text('Confirmer le mot de passe', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.gray600)),
+        const Text('Confirmer le mot de passe',
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray600)),
         const SizedBox(height: 6),
         TextFormField(
           controller: _confirmController,
@@ -360,9 +448,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        _PrimaryButton(label: '✓ Enregistrer le mot de passe', isLoading: _isLoading, onTap: _reinitialiser, color: AppColors.green),
+        _PrimaryButton(
+            label: '✓ Enregistrer le mot de passe',
+            isLoading: _isLoading,
+            onTap: _reinitialiser,
+            color: AppColors.green),
         const SizedBox(height: 16),
-        _SwitchLink(text: 'Vous vous souvenez ? ', linkText: 'Se connecter', onTap: () => context.go(AppRoutes.login)),
+        _SwitchLink(
+            text: 'Vous vous souvenez ? ',
+            linkText: 'Se connecter',
+            onTap: () => context.go(AppRoutes.login)),
       ],
     );
   }
@@ -375,22 +470,37 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 90, height: 90,
+              width: 90,
+              height: 90,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(colors: [Color(0xFF059669), AppColors.green]),
+                gradient: const LinearGradient(
+                    colors: [Color(0xFF059669), AppColors.green]),
                 borderRadius: BorderRadius.circular(28),
-                boxShadow: [BoxShadow(color: AppColors.green.withOpacity(0.3), blurRadius: 24, spreadRadius: 4)],
+                boxShadow: [
+                  BoxShadow(
+                      color: AppColors.green.withOpacity(0.3),
+                      blurRadius: 24,
+                      spreadRadius: 4)
+                ],
               ),
-              child: const Center(child: Text('✅', style: TextStyle(fontSize: 42))),
+              child: const Center(
+                  child: Text('✅', style: TextStyle(fontSize: 42))),
             ),
             const SizedBox(height: 24),
             const Text('Mot de passe\nréinitialisé !',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.gray900, letterSpacing: -0.5, height: 1.2)),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.gray900,
+                    letterSpacing: -0.5,
+                    height: 1.2)),
             const SizedBox(height: 12),
-            const Text('Votre nouveau mot de passe a été enregistré localement. Vous pouvez maintenant vous reconnecter.',
+            const Text(
+                'Votre nouveau mot de passe a été enregistré localement. Vous pouvez maintenant vous reconnecter.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, color: AppColors.gray400, height: 1.6)),
+                style: TextStyle(
+                    fontSize: 13, color: AppColors.gray400, height: 1.6)),
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
@@ -399,9 +509,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 onPressed: () => context.go(AppRoutes.login),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.blue700,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
                 ),
-                child: const Text('→ Se connecter', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+                child: const Text('→ Se connecter',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white)),
               ),
             ),
           ],
@@ -420,19 +535,27 @@ class _StepDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final done    = etapeActuelle > numero;
+    final done = etapeActuelle > numero;
     final current = etapeActuelle == numero;
     return Container(
-      width: 28, height: 28,
+      width: 28,
+      height: 28,
       decoration: BoxDecoration(
-        color: done ? AppColors.green : current ? AppColors.blue700 : AppColors.gray200,
+        color: done
+            ? AppColors.green
+            : current
+                ? AppColors.blue700
+                : AppColors.gray200,
         shape: BoxShape.circle,
       ),
       child: Center(
         child: done
             ? const Icon(Icons.check, size: 14, color: Colors.white)
-            : Text('$numero', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
-                color: current ? Colors.white : AppColors.gray400)),
+            : Text('$numero',
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: current ? Colors.white : AppColors.gray400)),
       ),
     );
   }
@@ -445,7 +568,8 @@ class _StepLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(height: 2, color: actif ? AppColors.green : AppColors.gray200),
+      child: Container(
+          height: 2, color: actif ? AppColors.green : AppColors.gray200),
     );
   }
 }
@@ -468,7 +592,13 @@ class _InfoBox extends StatelessWidget {
         children: [
           const Text('ℹ️', style: TextStyle(fontSize: 14)),
           const SizedBox(width: 8),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 12, color: AppColors.blue700, fontWeight: FontWeight.w500, height: 1.5))),
+          Expanded(
+              child: Text(text,
+                  style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.blue700,
+                      fontWeight: FontWeight.w500,
+                      height: 1.5))),
         ],
       ),
     );
@@ -492,7 +622,12 @@ class _ErrorBox extends StatelessWidget {
         children: [
           const Text('⚠️', style: TextStyle(fontSize: 14)),
           const SizedBox(width: 8),
-          Expanded(child: Text(message, style: const TextStyle(color: AppColors.red, fontSize: 12, fontWeight: FontWeight.w500))),
+          Expanded(
+              child: Text(message,
+                  style: const TextStyle(
+                      color: AppColors.red,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500))),
         ],
       ),
     );
@@ -504,21 +639,35 @@ class _PrimaryButton extends StatelessWidget {
   final bool isLoading;
   final VoidCallback? onTap;
   final Color color;
-  const _PrimaryButton({required this.label, required this.isLoading, this.onTap, this.color = AppColors.blue700});
+  const _PrimaryButton(
+      {required this.label,
+      required this.isLoading,
+      this.onTap,
+      this.color = AppColors.blue700});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity, height: 50,
+      width: double.infinity,
+      height: 50,
       child: ElevatedButton(
         onPressed: isLoading ? null : onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
         child: isLoading
-            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-            : Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                    color: Colors.white, strokeWidth: 2))
+            : Text(label,
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white)),
       ),
     );
   }
@@ -528,7 +677,8 @@ class _SwitchLink extends StatelessWidget {
   final String text;
   final String linkText;
   final VoidCallback onTap;
-  const _SwitchLink({required this.text, required this.linkText, required this.onTap});
+  const _SwitchLink(
+      {required this.text, required this.linkText, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -540,7 +690,10 @@ class _SwitchLink extends StatelessWidget {
             style: const TextStyle(fontSize: 13, color: AppColors.gray400),
             children: [
               TextSpan(text: text),
-              TextSpan(text: linkText, style: const TextStyle(color: AppColors.blue700, fontWeight: FontWeight.w700)),
+              TextSpan(
+                  text: linkText,
+                  style: const TextStyle(
+                      color: AppColors.blue700, fontWeight: FontWeight.w700)),
             ],
           ),
         ),

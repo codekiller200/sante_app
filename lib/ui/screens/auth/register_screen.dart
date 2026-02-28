@@ -28,17 +28,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   bool _accepteCGU = false;
   String? _errorMessage;
-  String _questionChoisie = 'Quel est le nom de votre médecin traitant ?';
+  String _questionChoisie = 'Nom de votre médecin traitant ?';
 
   final List<String> _questions = [
-    'Quel est le nom de votre médecin traitant ?',
-    'Quel est le prénom de votre mère ?',
-    'Dans quelle ville êtes-vous né(e) ?',
-    'Quel est le nom de votre animal de compagnie ?',
-    'Quel est votre surnom d\'enfance ?',
+    'Nom de votre médecin traitant ?',
+    'Prénom de votre mère ?',
+    'Ville de naissance ?',
+    'Nom de votre animal ?',
+    'Surnom d\'enfance ?',
   ];
 
-  // Calcul force du mot de passe
   int get _passwordStrength {
     final p = _passwordController.text;
     int score = 0;
@@ -95,7 +94,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _sInscrire() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_accepteCGU) {
-      setState(() => _errorMessage = 'Veuillez accepter les conditions d\'utilisation.');
+      setState(() =>
+          _errorMessage = 'Veuillez accepter les conditions d\'utilisation.');
       return;
     }
 
@@ -115,7 +115,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!mounted) return;
 
     if (result.success) {
-      // Afficher message de succès puis aller au login
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Compte créé avec succès ! Connectez-vous.'),
@@ -134,14 +133,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const AuthHeader(
-            title: 'Créer un compte 🎉',
-            subtitle: 'Rejoignez MediRemind et prenez soin de vous',
-          ),
-          Expanded(
-            child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const AuthHeader(
+              title: 'Créer un compte 🎉',
+              subtitle: 'Rejoignez MediRemind et prenez soin de vous',
+            ),
+            Padding(
               padding: const EdgeInsets.all(24),
               child: Form(
                 key: _formKey,
@@ -155,13 +154,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     const SizedBox(height: 20),
-
                     if (_errorMessage != null) ...[
                       _ErrorBox(message: _errorMessage!),
                       const SizedBox(height: 16),
                     ],
-
-                    // Nom complet
                     _label('Nom complet'),
                     const SizedBox(height: 6),
                     TextFormField(
@@ -175,8 +171,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           v == null || v.trim().isEmpty ? 'Champ requis' : null,
                     ),
                     const SizedBox(height: 14),
-
-                    // Username
                     _label('Nom d\'utilisateur'),
                     const SizedBox(height: 6),
                     TextFormField(
@@ -187,14 +181,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         hintText: 'ex: marie.dupont',
                       ),
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty) return 'Champ requis';
+                        if (v == null || v.trim().isEmpty)
+                          return 'Champ requis';
                         if (v.trim().length < 3) return 'Minimum 3 caractères';
                         return null;
                       },
                     ),
                     const SizedBox(height: 14),
-
-                    // Mot de passe
                     _label('Mot de passe'),
                     const SizedBox(height: 6),
                     TextFormField(
@@ -219,7 +212,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return null;
                       },
                     ),
-                    // Indicateur de force
                     if (_passwordController.text.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       ClipRRect(
@@ -242,8 +234,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ],
                     const SizedBox(height: 14),
-
-                    // Confirmation mot de passe
                     _label('Confirmer le mot de passe'),
                     const SizedBox(height: 6),
                     TextFormField(
@@ -270,12 +260,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     const SizedBox(height: 14),
-
-                    // Question secrète
                     _label('Question secrète'),
                     const SizedBox(height: 6),
                     DropdownButtonFormField<String>(
-                      initialValue: _questionChoisie,
+                      value: _questionChoisie,
+                      isExpanded: true,
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.help_outline),
                       ),
@@ -283,15 +272,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           .map((q) => DropdownMenuItem(
                                 value: q,
                                 child: Text(q,
-                                    style: const TextStyle(fontSize: 12)),
+                                    style: const TextStyle(fontSize: 12),
+                                    overflow: TextOverflow.ellipsis),
                               ))
                           .toList(),
                       onChanged: (v) =>
                           setState(() => _questionChoisie = v ?? _questions[0]),
                     ),
                     const SizedBox(height: 14),
-
-                    // Réponse secrète
                     _label('Votre réponse'),
                     const SizedBox(height: 6),
                     TextFormField(
@@ -305,8 +293,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           v == null || v.trim().isEmpty ? 'Champ requis' : null,
                     ),
                     const SizedBox(height: 16),
-
-                    // CGU
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -348,8 +334,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     ),
                     const SizedBox(height: 24),
-
-                    // Bouton inscription
                     SizedBox(
                       width: double.infinity,
                       height: 50,
@@ -378,7 +362,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
                     Center(
                       child: GestureDetector(
                         onTap: () => context.go(AppRoutes.login),
@@ -404,8 +387,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
