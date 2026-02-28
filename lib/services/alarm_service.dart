@@ -1,13 +1,15 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
+/// Service de communication avec le code natif Android (AlarmManager).
+/// Le MethodChannel correspond à celui déclaré dans MainActivity.kt.
 class AlarmService {
   AlarmService._();
   static final AlarmService instance = AlarmService._();
 
   static const _channel = MethodChannel('com.example.sante/alarm');
 
-  // Programmer une alarme exacte
+  /// Programme une alarme exacte via AlarmManager côté Android.
   Future<bool> programmerAlarme({
     required int id,
     required String titre,
@@ -24,53 +26,53 @@ class AlarmService {
         'minute': minute,
       });
       return result ?? false;
-    } catch (e) {
-      debugPrint('Erreur lors de la programmation de l\'alarme: $e');
+    } on PlatformException catch (e) {
+      debugPrint('[AlarmService] programmerAlarme error: ${e.code} — ${e.message}');
       return false;
     }
   }
 
-  // Annuler une alarme
+  /// Annule une alarme par son identifiant.
   Future<bool> annulerAlarme(int id) async {
     try {
-      final result = await _channel.invokeMethod<bool>('annulerAlarme', {
-        'id': id,
-      });
+      final result = await _channel.invokeMethod<bool>('annulerAlarme', {'id': id});
       return result ?? false;
-    } catch (e) {
-      debugPrint('Erreur lors de l\'annulation de l\'alarme: $e');
+    } on PlatformException catch (e) {
+      debugPrint('[AlarmService] annulerAlarme error: ${e.code} — ${e.message}');
       return false;
     }
   }
 
-  // Vérifier si les alarmes exactes sont autorisées
+  /// Vérifie si la permission SCHEDULE_EXACT_ALARM est accordée (Android 12+).
   Future<bool> verifierAutorisation() async {
     try {
       final result = await _channel.invokeMethod<bool>('verifierAutorisation');
       return result ?? false;
-    } catch (e) {
-      debugPrint('Erreur lors de la vérification des autorisations: $e');
+    } on PlatformException catch (e) {
+      debugPrint('[AlarmService] verifierAutorisation error: ${e.code} — ${e.message}');
       return false;
     }
   }
 
-  // Annuler toutes les alarmes
+  /// Annule toutes les alarmes programmées.
+  /// CORRECTION: appelle le code natif au lieu de retourner true sans rien faire.
   Future<bool> annulerToutesAlarmes() async {
     try {
-      return true;
-    } catch (e) {
-      debugPrint('Erreur lors de l\'annulation des alarmes: $e');
+      final result = await _channel.invokeMethod<bool>('annulerToutesAlarmes');
+      return result ?? false;
+    } on PlatformException catch (e) {
+      debugPrint('[AlarmService] annulerToutesAlarmes error: ${e.code} — ${e.message}');
       return false;
     }
   }
 
-  // Ouvrir l'app Horloge native
-  Future<bool> ouvrirAppAlarme() async {
+  /// Ouvre les paramètres système pour autoriser les alarmes exactes.
+  Future<bool> ouvrirParametresAlarme() async {
     try {
-      final result = await _channel.invokeMethod<bool>('ouvrirAppAlarme');
+      final result = await _channel.invokeMethod<bool>('ouvrirParametresAlarme');
       return result ?? false;
-    } catch (e) {
-      debugPrint('Erreur lors de l\'ouverture de l\'app alarme: $e');
+    } on PlatformException catch (e) {
+      debugPrint('[AlarmService] ouvrirParametresAlarme error: ${e.code} — ${e.message}');
       return false;
     }
   }

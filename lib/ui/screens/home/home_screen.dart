@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
       currentIndex: 0,
       child: Column(
         children: [
-          _buildHeader(auth, now),
+          _buildHeader(auth, now, priseRepo, medRepo.medicaments),
           Expanded(
             child: medRepo.isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -55,41 +55,56 @@ class _HomeScreenState extends State<HomeScreen> {
                       await priseRepo.chargerAujourdhui();
                     },
                     child: ListView(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
                       children: [
+                        // ── Bouton prochaine prise ──────────────────────────
                         if (prochaine != null) ...[
-                          _NextDoseCard(
+                          _ProchainePriseBanner(
                             medicament: prochaine,
                             heure: _getProchainHeure(prochaine, now),
                             onPris: () => _confirmerPrise(prochaine, priseRepo),
                             onSnooze: () => _snoozerPrise(prochaine, priseRepo),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 24),
                         ],
-                        _ObservanceCard(
-                          observance: priseRepo.observance,
-                          prisesEffectuees: priseRepo.prisesDuMois
-                              .where((p) => p.statut == StatutPrise.prise)
-                              .length,
-                          totalPrises: priseRepo.prisesDuMois.length,
-                        ),
-                        const SizedBox(height: 16),
+
+                        // ── Liste médicaments du jour ───────────────────────
                         const Text(
-                          "Aujourd'hui",
+                          'AUJOURD\'HUI',
                           style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.gray900,
-                              letterSpacing: 0.5),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF9CA3AF),
+                            letterSpacing: 1.4,
+                          ),
                         ),
                         const SizedBox(height: 10),
+
                         if (medRepo.medicaments.isEmpty)
                           _EmptyState()
                         else
                           ...medRepo.medicaments.map((m) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: _MedTodayCard(medicament: m, now: now),
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: _MedTodayCard(
+                                  medicament: m,
+                                  now: now,
+                                  prises: priseRepo.prisesAujourdhui,
+                                ),
                               )),
+
+                        // ── Observance ──────────────────────────────────────
+                        if (medRepo.medicaments.isNotEmpty) ...[
+                          const SizedBox(height: 20),
+                          _ObservanceCard(
+                            observance: priseRepo.observance,
+                            prisesEffectuees: priseRepo.prisesDuMois
+                                .where((p) => p.statut == StatutPrise.prise)
+                                .length,
+                            totalPrises: priseRepo.prisesDuMois.length,
+                          ),
+                        ],
+
+                        // ── Alertes stock bas ───────────────────────────────
                         ..._buildStockAlertes(medRepo.medicaments),
                       ],
                     ),
@@ -99,6 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────
 
   Medicament? _getProchainePrise(List<Medicament> meds, DateTime now) {
     for (final med in meds) {
@@ -170,18 +187,30 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<int?> _showSnoozeDialog() async {
+  Future<int?> _showSnoozeDialog() {
     return showModalBottomSheet<int>(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Handle bar
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE5E7EB),
+                  borderRadius: BorderRadius.circular(99),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             const Text('Reporter de…',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             const SizedBox(height: 16),
@@ -207,7 +236,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ))
                   .toList(),
             ),
-            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -219,29 +247,41 @@ class _HomeScreenState extends State<HomeScreen> {
     if (bas.isEmpty) return [];
 
     return [
-      const SizedBox(height: 16),
+      const SizedBox(height: 20),
       const Text('⚠️ Stock bas',
           style: TextStyle(
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: AppColors.orange)),
+              color: AppColors.orange,
+              letterSpacing: 1.2)),
       const SizedBox(height: 8),
       ...bas.map((m) => Padding(
-            padding: const EdgeInsets.only(bottom: 6),
+            padding: const EdgeInsets.only(bottom: 8),
             child: _StockAlerteTile(medicament: m),
           )),
     ];
   }
 
-  Widget _buildHeader(AuthService auth, DateTime now) {
+  // ─── Header ──────────────────────────────────────────────────────────────
+
+  Widget _buildHeader(
+    AuthService auth,
+    DateTime now,
+    PriseRepository priseRepo,
+    List<Medicament> meds,
+  ) {
     final prenom = auth.utilisateurConnecte?.nomComplet.split(' ').first ?? '';
-    final dateStr = DateFormat('EEEE d MMMM', 'fr_FR').format(now);
+    final dateStr = DateFormat('EEEE d MMM.', 'fr_FR').format(now);
+
+    // Compter les prises prévues aujourd'hui
+    final totalHoraires =
+        meds.fold<int>(0, (sum, m) => sum + m.horaires.length);
 
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.blue900, Color(0xFF0D3460)],
+          colors: [Color(0xFF0F2952), Color(0xFF1A4480)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -249,29 +289,47 @@ class _HomeScreenState extends State<HomeScreen> {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 22),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Bonjour + prénom
+              Row(
+                children: [
+                  Text(
+                    'Bonjour, ${prenom.isNotEmpty ? prenom : 'vous'} ',
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Text('👋', style: TextStyle(fontSize: 15)),
+                ],
+              ),
+              const SizedBox(height: 2),
+              // Date
               Text(
-                'Bonjour, ${prenom.isNotEmpty ? prenom : 'à tous'} 👋',
+                _capitalizeFirst(dateStr),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  height: 1.2,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  height: 1.15,
+                  letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                _capitalizeFirst(dateStr),
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 0.3,
+              // Nombre de prises
+              if (totalHoraires > 0)
+                Text(
+                  '$totalHoraires prise${totalHoraires > 1 ? 's' : ''} prévue${totalHoraires > 1 ? 's' : ''} aujourd\'hui',
+                  style: const TextStyle(
+                    color: Colors.white60,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -285,175 +343,108 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _NextDoseCard extends StatelessWidget {
+// ════════════════════════════════════════════════════════════════════════════
+// Bannière "Prochaine Prise" — bouton gradient pleine largeur
+// ════════════════════════════════════════════════════════════════════════════
+
+class _ProchainePriseBanner extends StatelessWidget {
   final Medicament medicament;
   final String heure;
   final VoidCallback onPris;
   final VoidCallback onSnooze;
 
-  const _NextDoseCard(
-      {required this.medicament,
-      required this.heure,
-      required this.onPris,
-      required this.onSnooze});
+  const _ProchainePriseBanner({
+    required this.medicament,
+    required this.heure,
+    required this.onPris,
+    required this.onSnooze,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.blue700, AppColors.teal],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return GestureDetector(
+      onTap: onPris,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF2563EB), Color(0xFF38BDF8)],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF2563EB).withOpacity(0.35),
+              blurRadius: 18,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-              color: AppColors.blue700.withOpacity(0.3),
-              blurRadius: 16,
-              offset: const Offset(0, 6))
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('⏰ PROCHAINE PRISE',
+        child: Row(
+          children: [
+            const Text('⏰', style: TextStyle(fontSize: 18)),
+            const SizedBox(width: 10),
+            const Text(
+              'PROCHAINE PRISE',
               style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.2)),
-          const SizedBox(height: 6),
-          Text(heure,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 38,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -1,
-                  height: 1)),
-          const SizedBox(height: 4),
-          Text('${medicament.icone} ${medicament.nom} · ${medicament.dosage}',
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500)),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: onPris,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppColors.blue700,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    elevation: 0,
-                  ),
-                  child: const Text('✓ Pris',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                ),
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.0,
               ),
-              const SizedBox(width: 10),
-              OutlinedButton(
-                onPressed: onSnooze,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.white54),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
+            const Spacer(),
+            // Petit bouton snooze discret
+            GestureDetector(
+              onTap: onSnooze,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text('⏱ Snooze',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13)),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ObservanceCard extends StatelessWidget {
-  final double observance;
-  final int prisesEffectuees;
-  final int totalPrises;
-
-  const _ObservanceCard(
-      {required this.observance,
-      required this.prisesEffectuees,
-      required this.totalPrises});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Observance ce mois',
+                child: const Text(
+                  '⏱ Snooze',
                   style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.gray900)),
-              Text(
-                '${observance.toStringAsFixed(0)}%',
-                style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.green),
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(999),
-            child: LinearProgressIndicator(
-              value: observance / 100,
-              minHeight: 8,
-              backgroundColor: AppColors.gray100,
-              valueColor: const AlwaysStoppedAnimation(AppColors.green),
             ),
-          ),
-          const SizedBox(height: 6),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '$prisesEffectuees prises sur $totalPrises effectuées',
-              style: const TextStyle(fontSize: 11, color: AppColors.gray400),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
+
+// ════════════════════════════════════════════════════════════════════════════
+// Carte médicament du jour — style maquette
+// ════════════════════════════════════════════════════════════════════════════
 
 class _MedTodayCard extends StatelessWidget {
   final Medicament medicament;
   final DateTime now;
+  final List<Prise> prises;
 
-  const _MedTodayCard({required this.medicament, required this.now});
+  const _MedTodayCard({
+    required this.medicament,
+    required this.now,
+    required this.prises,
+  });
 
-  @override
-  Widget build(BuildContext context) {
-    final prochainHoraire = medicament.horaires.firstWhere(
+  bool get _estPrisAujourdhui {
+    return prises.any((p) =>
+        p.medicamentId == medicament.id && p.statut == StatutPrise.prise);
+  }
+
+  String get _prochainHoraire {
+    return medicament.horaires.firstWhere(
       (h) {
         final parts = h.split(':');
         final heure = DateTime(now.year, now.month, now.day,
@@ -462,56 +453,185 @@ class _MedTodayCard extends StatelessWidget {
       },
       orElse: () => medicament.horaires.last,
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pris = _estPrisAujourdhui;
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Row(
         children: [
+          // Icone médicament
           Container(
-            width: 42,
-            height: 42,
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
-                color: AppColors.blue50,
-                borderRadius: BorderRadius.circular(12)),
+              color: const Color(0xFFF0F4FF),
+              borderRadius: BorderRadius.circular(14),
+            ),
             child: Center(
-                child: Text(medicament.icone,
-                    style: const TextStyle(fontSize: 20))),
+              child: Text(
+                medicament.icone,
+                style: const TextStyle(fontSize: 22),
+              ),
+            ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
+
+          // Nom + dosage + fréquence
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(medicament.nom,
-                    style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.gray900)),
                 Text(
-                    '${medicament.dosage} · ${medicament.frequenceParJour}x/jour',
-                    style: const TextStyle(
-                        fontSize: 12, color: AppColors.gray400)),
+                  medicament.nom,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${medicament.dosage} · ${medicament.frequenceParJour}x par jour',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF9CA3AF),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
               ],
             ),
           ),
-          Text(prochainHoraire,
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.blue700,
-                  fontFamily: 'DM Mono')),
+
+          // Heure + coche si pris
+          Row(
+            children: [
+              Text(
+                _prochainHoraire,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color:
+                      pris ? const Color(0xFF9CA3AF) : const Color(0xFF2563EB),
+                  decoration: pris ? TextDecoration.lineThrough : null,
+                ),
+              ),
+              if (pris) ...[
+                const SizedBox(width: 4),
+                const Text(
+                  '✓',
+                  style: TextStyle(
+                    color: Color(0xFF22C55E),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ],
       ),
     );
   }
 }
+
+// ════════════════════════════════════════════════════════════════════════════
+// Carte observance
+// ════════════════════════════════════════════════════════════════════════════
+
+class _ObservanceCard extends StatelessWidget {
+  final double observance;
+  final int prisesEffectuees;
+  final int totalPrises;
+
+  const _ObservanceCard({
+    required this.observance,
+    required this.prisesEffectuees,
+    required this.totalPrises,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Observance ce mois',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF111827),
+                ),
+              ),
+              Text(
+                '${observance.toStringAsFixed(0)}%',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF22C55E),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(99),
+            child: LinearProgressIndicator(
+              value: totalPrises == 0 ? 0 : observance / 100,
+              minHeight: 8,
+              backgroundColor: const Color(0xFFF3F4F6),
+              valueColor: const AlwaysStoppedAnimation(Color(0xFF22C55E)),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '$prisesEffectuees prises sur $totalPrises effectuées',
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xFF9CA3AF),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Alerte stock bas
+// ════════════════════════════════════════════════════════════════════════════
 
 class _StockAlerteTile extends StatelessWidget {
   final Medicament medicament;
@@ -520,7 +640,7 @@ class _StockAlerteTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: const Color(0xFFFFFBEB),
         border: Border.all(color: const Color(0xFFFDE68A)),
@@ -528,22 +648,28 @@ class _StockAlerteTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(medicament.icone, style: const TextStyle(fontSize: 18)),
-          const SizedBox(width: 10),
+          Text(medicament.icone, style: const TextStyle(fontSize: 20)),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(medicament.nom,
-                    style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.gray900)),
-                Text('${medicament.joursRestants} jours restants',
-                    style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.orange,
-                        fontWeight: FontWeight.w500)),
+                Text(
+                  medicament.nom,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                Text(
+                  '${medicament.joursRestants} jours restants',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.orange,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ],
             ),
           ),
@@ -554,24 +680,46 @@ class _StockAlerteTile extends StatelessWidget {
   }
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// État vide
+// ════════════════════════════════════════════════════════════════════════════
+
 class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 40),
+        padding: const EdgeInsets.symmetric(vertical: 48),
         child: Column(
           children: [
-            Text('💊', style: TextStyle(fontSize: 48)),
-            SizedBox(height: 12),
-            Text('Aucun médicament ajouté',
-                style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.gray600)),
-            SizedBox(height: 4),
-            Text('Allez dans "Médicaments" pour commencer',
-                style: TextStyle(fontSize: 13, color: AppColors.gray400)),
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0F4FF),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Center(
+                child: Text('💊', style: TextStyle(fontSize: 36)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Aucun médicament ajouté',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF374151),
+              ),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Allez dans "Médicaments" pour commencer',
+              style: TextStyle(
+                fontSize: 13,
+                color: Color(0xFF9CA3AF),
+              ),
+            ),
           ],
         ),
       ),

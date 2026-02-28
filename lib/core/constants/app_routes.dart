@@ -2,10 +2,10 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/auth_service.dart';
-import '../../ui/screens/splash/splash_screen.dart';
 import '../../ui/screens/auth/login_screen.dart';
 import '../../ui/screens/auth/register_screen.dart';
 import '../../ui/screens/auth/forgot_password_screen.dart';
+import '../../ui/screens/auth/pin_screen.dart';
 import '../../ui/screens/home/home_screen.dart';
 import '../../ui/screens/medicaments/liste_medicaments_screen.dart';
 import '../../ui/screens/medicaments/form_medicament_screen.dart';
@@ -15,42 +15,51 @@ import '../../ui/screens/profil/profil_screen.dart';
 class AppRoutes {
   AppRoutes._();
 
-  // Noms des routes
-  static const String splash        = '/';
-  static const String login         = '/login';
-  static const String register      = '/register';
+  static const String login = '/login';
+  static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
-  static const String home          = '/home';
-  static const String medicaments   = '/medicaments';
+  static const String pin = '/pin';
+  static const String home = '/home';
+  static const String medicaments = '/medicaments';
   static const String formMedicament = '/medicaments/form';
-  static const String journal       = '/journal';
-  static const String profil        = '/profil';
+  static const String journal = '/journal';
+  static const String profil = '/profil';
 
   static final router = GoRouter(
-    initialLocation: splash,
-    redirect: (context, state) {
-      final authService = context.read<AuthService>();
-      final isLoggedIn = authService.isLoggedIn;
-      final isAuthRoute = state.matchedLocation == login
-          || state.matchedLocation == register
-          || state.matchedLocation == forgotPassword
-          || state.matchedLocation == splash;
+    // Démarre directement sur home — le redirect gère tout
+    initialLocation: home,
 
-      // Si pas connecté et pas sur une page auth → login
-      if (!isLoggedIn && !isAuthRoute) return login;
+    redirect: (context, state) async {
+      final auth = context.read<AuthService>();
 
-      // Si connecté et sur login/register → home
-      if (isLoggedIn && (state.matchedLocation == login || state.matchedLocation == register)) {
+      // Attendre que la session soit chargée (restaurerSession() dans main.dart)
+      if (!auth.sessionChargee) return null;
+
+      final isLoggedIn = auth.isLoggedIn;
+      final loc = state.matchedLocation;
+
+      final isAuthRoute = loc == login ||
+          loc == register ||
+          loc == forgotPassword ||
+          loc == pin;
+
+      // Pas connecté → login (sauf si déjà sur une page auth)
+      if (!isLoggedIn && !isAuthRoute) {
+        // Vérifier si une session sauvegardée existe (besoin du PIN)
+        final pinEstActif = await auth.pinActif;
+        if (pinEstActif) return pin;
+        return login;
+      }
+
+      // Connecté et sur login/register → home
+      if (isLoggedIn && (loc == login || loc == register)) {
         return home;
       }
 
       return null;
     },
+
     routes: [
-      GoRoute(
-        path: splash,
-        builder: (context, state) => const SplashScreen(),
-      ),
       GoRoute(
         path: login,
         builder: (context, state) => const LoginScreen(),
@@ -62,6 +71,10 @@ class AppRoutes {
       GoRoute(
         path: forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: pin,
+        builder: (context, state) => const PinScreen(),
       ),
       GoRoute(
         path: home,

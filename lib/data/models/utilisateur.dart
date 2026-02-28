@@ -7,6 +7,24 @@ class Utilisateur {
   final String nomComplet;
   final DateTime dateCreation;
 
+  // ── Nouveaux champs profil ──────────────────────────────────────
+  /// Chemin local vers la photo choisie dans la galerie (null = emoji)
+  final String? avatarPath;
+
+  /// Emoji avatar si pas de photo (ex: '🧑', '👩', '🧔')
+  final String avatarEmoji;
+
+  /// Date de naissance
+  final DateTime? dateNaissance;
+
+  /// Nom du médecin traitant
+  final String? medecinTraitant;
+
+  /// Informations d'urgence (groupe sanguin, allergies, antécédents…)
+  final String? groupeSanguin;
+  final String? allergies;
+  final String? antecedents;
+
   Utilisateur({
     this.id,
     required this.username,
@@ -15,9 +33,15 @@ class Utilisateur {
     required this.secretAnswerHash,
     required this.nomComplet,
     required this.dateCreation,
+    this.avatarPath,
+    this.avatarEmoji = '🧑',
+    this.dateNaissance,
+    this.medecinTraitant,
+    this.groupeSanguin,
+    this.allergies,
+    this.antecedents,
   });
 
-  // Convertir en Map pour sqflite
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -27,10 +51,16 @@ class Utilisateur {
       'secret_answer_hash': secretAnswerHash,
       'nom_complet': nomComplet,
       'date_creation': dateCreation.toIso8601String(),
+      'avatar_path': avatarPath,
+      'avatar_emoji': avatarEmoji,
+      'date_naissance': dateNaissance?.toIso8601String(),
+      'medecin_traitant': medecinTraitant,
+      'groupe_sanguin': groupeSanguin,
+      'allergies': allergies,
+      'antecedents': antecedents,
     };
   }
 
-  // Créer depuis une Map sqflite
   factory Utilisateur.fromMap(Map<String, dynamic> map) {
     return Utilisateur(
       id: map['id'] as int?,
@@ -40,10 +70,18 @@ class Utilisateur {
       secretAnswerHash: map['secret_answer_hash'] as String,
       nomComplet: map['nom_complet'] as String,
       dateCreation: DateTime.parse(map['date_creation'] as String),
+      avatarPath: map['avatar_path'] as String?,
+      avatarEmoji: (map['avatar_emoji'] as String?) ?? '🧑',
+      dateNaissance: map['date_naissance'] != null
+          ? DateTime.parse(map['date_naissance'] as String)
+          : null,
+      medecinTraitant: map['medecin_traitant'] as String?,
+      groupeSanguin: map['groupe_sanguin'] as String?,
+      allergies: map['allergies'] as String?,
+      antecedents: map['antecedents'] as String?,
     );
   }
 
-  // Copie avec modifications
   Utilisateur copyWith({
     int? id,
     String? username,
@@ -52,6 +90,15 @@ class Utilisateur {
     String? secretAnswerHash,
     String? nomComplet,
     DateTime? dateCreation,
+    String? avatarPath,
+    String? avatarEmoji,
+    DateTime? dateNaissance,
+    String? medecinTraitant,
+    String? groupeSanguin,
+    String? allergies,
+    String? antecedents,
+    // Permet de mettre avatarPath à null explicitement
+    bool clearAvatarPath = false,
   }) {
     return Utilisateur(
       id: id ?? this.id,
@@ -61,6 +108,29 @@ class Utilisateur {
       secretAnswerHash: secretAnswerHash ?? this.secretAnswerHash,
       nomComplet: nomComplet ?? this.nomComplet,
       dateCreation: dateCreation ?? this.dateCreation,
+      avatarPath: clearAvatarPath ? null : (avatarPath ?? this.avatarPath),
+      avatarEmoji: avatarEmoji ?? this.avatarEmoji,
+      dateNaissance: dateNaissance ?? this.dateNaissance,
+      medecinTraitant: medecinTraitant ?? this.medecinTraitant,
+      groupeSanguin: groupeSanguin ?? this.groupeSanguin,
+      allergies: allergies ?? this.allergies,
+      antecedents: antecedents ?? this.antecedents,
     );
   }
+
+  /// Résumé des infos d'urgence pour l'affichage
+  String get resumeUrgences {
+    final parts = <String>[
+      if (groupeSanguin != null && groupeSanguin!.isNotEmpty)
+        'Groupe ${groupeSanguin}',
+      if (allergies != null && allergies!.isNotEmpty) allergies!,
+      if (antecedents != null && antecedents!.isNotEmpty) antecedents!,
+    ];
+    return parts.join(' · ');
+  }
+
+  bool get hasUrgences =>
+      (groupeSanguin?.isNotEmpty ?? false) ||
+      (allergies?.isNotEmpty ?? false) ||
+      (antecedents?.isNotEmpty ?? false);
 }

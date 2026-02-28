@@ -2,13 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+import 'utilisateur_dao.dart';
+
 class DatabaseHelper {
-  // Singleton
   DatabaseHelper._();
   static final DatabaseHelper instance = DatabaseHelper._();
 
   static Database? _db;
-  static const int _version = 1;
+  // CORRECTION: version 2 pour déclencher la migration des nouvelles colonnes profil
+  static const int _version = 2;
   static const String _dbName = 'mediremind.db';
 
   Future<Database> get database async {
@@ -20,9 +22,7 @@ class DatabaseHelper {
     try {
       final dbPath = await getDatabasesPath();
       final path = join(dbPath, _dbName);
-
       debugPrint('Database path: $path');
-
       return await openDatabase(
         path,
         version: _version,
@@ -35,22 +35,27 @@ class DatabaseHelper {
     }
   }
 
-  // Création des tables
   Future<void> _onCreate(Database db, int version) async {
-    // Table utilisateurs
+    // Table utilisateurs — avec les nouvelles colonnes dès la création
     await db.execute('''
       CREATE TABLE utilisateurs (
-        id                INTEGER PRIMARY KEY AUTOINCREMENT,
-        username          TEXT NOT NULL UNIQUE,
-        password_hash     TEXT NOT NULL,
-        secret_question   TEXT NOT NULL,
-        secret_answer_hash TEXT NOT NULL,
-        nom_complet       TEXT NOT NULL,
-        date_creation     TEXT NOT NULL
+        id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+        username            TEXT NOT NULL UNIQUE,
+        password_hash       TEXT NOT NULL,
+        secret_question     TEXT NOT NULL,
+        secret_answer_hash  TEXT NOT NULL,
+        nom_complet         TEXT NOT NULL,
+        date_creation       TEXT NOT NULL,
+        avatar_path         TEXT,
+        avatar_emoji        TEXT DEFAULT "🧑",
+        date_naissance      TEXT,
+        medecin_traitant    TEXT,
+        groupe_sanguin      TEXT,
+        allergies           TEXT,
+        antecedents         TEXT
       )
     ''');
 
-    // Table médicaments
     await db.execute('''
       CREATE TABLE medicaments (
         id                INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,7 +71,6 @@ class DatabaseHelper {
       )
     ''');
 
-    // Table prises (journal de bord)
     await db.execute('''
       CREATE TABLE prises (
         id                INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,18 +85,18 @@ class DatabaseHelper {
       )
     ''');
 
-    // Index pour accélérer les requêtes fréquentes
     await db.execute('CREATE INDEX idx_prises_date ON prises(date_prevue)');
     await db
         .execute('CREATE INDEX idx_prises_medicament ON prises(medicament_id)');
   }
 
-  // Migration future (v2, v3...)
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // À implémenter lors des futures versions
+    // Migration v1 → v2 : ajout des colonnes profil
+    if (oldVersion < 2) {
+      await UtilisateurDao.migrerV2(db);
+    }
   }
 
-  // Fermer la base (utile pour les tests)
   Future<void> close() async {
     final db = await database;
     await db.close();

@@ -14,7 +14,7 @@ dependencies:
   sqflite: ^2.3.2
   path: ^1.9.0
 
-  # --- Notifications ---
+  # --- Notifications & alarmes ---
   flutter_local_notifications: ^17.0.0
   timezone: ^0.9.4
 
@@ -24,13 +24,16 @@ dependencies:
   # --- Gestion d'état ---
   provider: ^6.1.2
 
-  # --- Sécurité (hashage mot de passe) ---
+  # --- Sécurité ---
   crypto: ^3.0.3
 
-  # --- UI ---
+  # --- UI & internationalisation ---
   intl: ^0.19.0
   flutter_svg: ^2.0.10
   cupertino_icons: ^1.0.6
+  google_fonts: ^6.2.1
+  image_picker: ^1.1.2
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:
