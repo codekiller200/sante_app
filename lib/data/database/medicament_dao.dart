@@ -1,5 +1,5 @@
-import 'package:mediremind/data/database/database_helper.dart';
-import 'package:mediremind/models/medicament.dart';
+import 'package:sante_app/data/database/database_helper.dart';
+import 'package:sante_app/data/models/medicament.dart';
 
 class MedicamentDao {
   final _db = DatabaseHelper.instance;
@@ -100,3 +100,4 @@ class MedicamentDao {
     return maps.map((m) => Medicament.fromMap(m)).toList();
   }
 }
+

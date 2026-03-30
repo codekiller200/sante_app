@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:mediremind/core/constants/app_colors.dart';
+import 'package:sante_app/core/constants/app_colors.dart';
 
 class AppTheme {
   AppTheme._();
@@ -111,3 +111,4 @@ class AppTheme {
     );
   }
 }
+

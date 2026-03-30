@@ -3,15 +3,15 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
-import 'package:mediremind/core/constants/app_routes.dart';
-import 'package:mediremind/core/theme/app_theme.dart';
-import 'package:mediremind/data/repositories/medicament_repository.dart';
-import 'package:mediremind/data/repositories/prise_repository.dart';
-import 'package:mediremind/services/alarm_preferences_service.dart';
-import 'package:mediremind/services/auth_service.dart';
-import 'package:mediremind/services/emergency_contacts_service.dart';
-import 'package:mediremind/services/notification_center_service.dart';
-import 'package:mediremind/services/notification_service.dart';
+import 'package:sante_app/core/constants/app_routes.dart';
+import 'package:sante_app/core/theme/app_theme.dart';
+import 'package:sante_app/data/repositories/medicament_repository.dart';
+import 'package:sante_app/data/repositories/prise_repository.dart';
+import 'package:sante_app/services/alarm_preferences_service.dart';
+import 'package:sante_app/services/auth_service.dart';
+import 'package:sante_app/services/emergency_contacts_service.dart';
+import 'package:sante_app/services/notification_center_service.dart';
+import 'package:sante_app/services/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,3 +64,4 @@ class MediRemindApp extends StatelessWidget {
     );
   }
 }
+

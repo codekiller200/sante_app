@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import 'package:mediremind/core/constants/app_colors.dart';
-import 'package:mediremind/data/repositories/medicament_repository.dart';
-import 'package:mediremind/data/repositories/prise_repository.dart';
-import 'package:mediremind/models/medicament.dart';
-import 'package:mediremind/models/prise.dart';
-import 'package:mediremind/services/alarm_service.dart';
-import 'package:mediremind/services/auth_service.dart';
-import 'package:mediremind/widgets/main_navigation_scaffold.dart';
-import 'package:mediremind/widgets/section_card.dart';
-import 'package:mediremind/widgets/stock_indicator.dart';
+import 'package:sante_app/core/constants/app_colors.dart';
+import 'package:sante_app/data/repositories/medicament_repository.dart';
+import 'package:sante_app/data/repositories/prise_repository.dart';
+import 'package:sante_app/data/models/medicament.dart';
+import 'package:sante_app/data/models/prise.dart';
+import 'package:sante_app/services/alarm_service.dart';
+import 'package:sante_app/services/auth_service.dart';
+import 'package:sante_app/ui/widgets/main_navigation_scaffold.dart';
+import 'package:sante_app/ui/widgets/section_card.dart';
+import 'package:sante_app/ui/widgets/stock_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -337,3 +337,4 @@ class _Metric extends StatelessWidget {
     );
   }
 }
+

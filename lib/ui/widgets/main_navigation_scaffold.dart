@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:mediremind/core/constants/app_colors.dart';
-import 'package:mediremind/core/constants/app_routes.dart';
+import 'package:sante_app/core/constants/app_colors.dart';
+import 'package:sante_app/core/constants/app_routes.dart';
 
 class MainNavigationScaffold extends StatelessWidget {
   const MainNavigationScaffold({
@@ -96,3 +96,4 @@ class MainNavigationScaffold extends StatelessWidget {
     );
   }
 }
+

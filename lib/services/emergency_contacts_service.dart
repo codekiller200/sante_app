@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:mediremind/models/emergency_contact.dart';
-import 'package:mediremind/services/secure_store_service.dart';
+import 'package:sante_app/data/models/emergency_contact.dart';
+import 'package:sante_app/services/secure_store_service.dart';
 
 class EmergencyContactsService extends ChangeNotifier {
   static const _storageKey = 'emergency_contacts';
@@ -42,3 +42,4 @@ class EmergencyContactsService extends ChangeNotifier {
     notifyListeners();
   }
 }
+

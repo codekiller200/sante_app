@@ -6,18 +6,18 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import 'package:mediremind/core/constants/app_colors.dart';
-import 'package:mediremind/core/constants/app_routes.dart';
-import 'package:mediremind/models/emergency_contact.dart';
-import 'package:mediremind/models/utilisateur.dart';
-import 'package:mediremind/services/alarm_preferences_service.dart';
-import 'package:mediremind/services/alarm_guard_service.dart';
-import 'package:mediremind/services/alarm_service.dart';
-import 'package:mediremind/services/auth_service.dart';
-import 'package:mediremind/services/emergency_contacts_service.dart';
-import 'package:mediremind/services/notification_center_service.dart';
-import 'package:mediremind/widgets/main_navigation_scaffold.dart';
-import 'package:mediremind/widgets/section_card.dart';
+import 'package:sante_app/core/constants/app_colors.dart';
+import 'package:sante_app/core/constants/app_routes.dart';
+import 'package:sante_app/data/models/emergency_contact.dart';
+import 'package:sante_app/data/models/utilisateur.dart';
+import 'package:sante_app/services/alarm_preferences_service.dart';
+import 'package:sante_app/services/alarm_guard_service.dart';
+import 'package:sante_app/services/alarm_service.dart';
+import 'package:sante_app/services/auth_service.dart';
+import 'package:sante_app/services/emergency_contacts_service.dart';
+import 'package:sante_app/services/notification_center_service.dart';
+import 'package:sante_app/ui/widgets/main_navigation_scaffold.dart';
+import 'package:sante_app/ui/widgets/section_card.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -573,3 +573,4 @@ class _ProfileRow extends StatelessWidget {
     );
   }
 }
+

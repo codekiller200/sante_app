@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:mediremind/core/security/secret_hasher.dart';
-import 'package:mediremind/data/database/utilisateur_dao.dart';
-import 'package:mediremind/models/utilisateur.dart';
-import 'package:mediremind/services/secure_store_service.dart';
+import 'package:sante_app/core/security/secret_hasher.dart';
+import 'package:sante_app/data/database/utilisateur_dao.dart';
+import 'package:sante_app/data/models/utilisateur.dart';
+import 'package:sante_app/services/secure_store_service.dart';
 
 class AuthService extends ChangeNotifier {
   final UtilisateurDao _dao = UtilisateurDao();
@@ -262,3 +262,4 @@ class AuthResult<T> {
   factory AuthResult.error(String message) =>
       AuthResult._(success: false, errorMessage: message);
 }
+

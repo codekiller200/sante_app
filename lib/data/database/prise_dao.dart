@@ -1,5 +1,5 @@
-import 'package:mediremind/data/database/database_helper.dart';
-import 'package:mediremind/models/prise.dart';
+import 'package:sante_app/data/database/database_helper.dart';
+import 'package:sante_app/data/models/prise.dart';
 
 class PriseDao {
   final _db = DatabaseHelper.instance;
@@ -100,3 +100,4 @@ class PriseDao {
     );
   }
 }
+

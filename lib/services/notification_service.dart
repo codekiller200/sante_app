@@ -3,9 +3,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
-import 'package:mediremind/models/medicament.dart';
-import 'package:mediremind/services/alarm_preferences_service.dart';
-import 'package:mediremind/services/alarm_service.dart';
+import 'package:sante_app/data/models/medicament.dart';
+import 'package:sante_app/services/alarm_preferences_service.dart';
+import 'package:sante_app/services/alarm_service.dart';
 
 class NotificationService {
   NotificationService._();
@@ -376,3 +376,4 @@ extension on AndroidNotificationDetails {
     );
   }
 }
+

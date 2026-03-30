@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:mediremind/core/constants/app_colors.dart';
-import 'package:mediremind/widgets/app_logo.dart';
+import 'package:sante_app/core/constants/app_colors.dart';
+import 'package:sante_app/ui/widgets/app_logo.dart';
 
 class AuthShell extends StatelessWidget {
   const AuthShell({
@@ -269,3 +269,4 @@ class InlineBanner extends StatelessWidget {
     );
   }
 }
+

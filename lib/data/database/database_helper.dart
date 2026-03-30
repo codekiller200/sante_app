@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'package:mediremind/data/database/utilisateur_dao.dart';
+import 'package:sante_app/data/database/utilisateur_dao.dart';
 
 class DatabaseHelper {
   DatabaseHelper._();
@@ -104,3 +104,4 @@ class DatabaseHelper {
     _db = null;
   }
 }
+

@@ -1,4 +1,4 @@
-name: mediremind
+name: sante_app
 description: Application mobile de rappel de médicaments
 publish_to: 'none'
 version: 1.0.0+1
@@ -65,3 +65,4 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mediremind/services/auth_service.dart';
+import 'package:sante_app/services/auth_service.dart';
 
 void main() {
   group('AuthService', () {
@@ -51,3 +51,4 @@ void main() {
     });
   });
 }
+

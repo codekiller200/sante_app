@@ -1,5 +1,5 @@
-import 'package:mediremind/services/alarm_service.dart';
-import 'package:mediremind/services/notification_service.dart';
+import 'package:sante_app/services/alarm_service.dart';
+import 'package:sante_app/services/notification_service.dart';
 
 class AlarmGuardStatus {
   const AlarmGuardStatus({
@@ -38,3 +38,4 @@ class AlarmGuardService {
     await AlarmService.instance.demanderIgnorerOptimisationsBatterie();
   }
 }
+

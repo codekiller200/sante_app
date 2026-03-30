@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:mediremind/core/constants/app_colors.dart';
-import 'package:mediremind/models/medicament.dart';
+import 'package:sante_app/core/constants/app_colors.dart';
+import 'package:sante_app/data/models/medicament.dart';
 
 class StockIndicator extends StatelessWidget {
   const StockIndicator({super.key, required this.medicament});
@@ -32,3 +32,4 @@ class StockIndicator extends StatelessWidget {
     );
   }
 }
+

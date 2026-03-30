@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:mediremind/data/database/prise_dao.dart';
-import 'package:mediremind/models/prise.dart';
+import 'package:sante_app/data/database/prise_dao.dart';
+import 'package:sante_app/data/models/prise.dart';
 
 class PriseRepository extends ChangeNotifier {
   final _dao = PriseDao();
@@ -70,3 +70,4 @@ class PriseRepository extends ChangeNotifier {
   // Taux d'observance en %
   String get observanceFormatee => '${_observance.toStringAsFixed(0)}%';
 }
+

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'package:mediremind/constants/secret_questions.dart';
-import 'package:mediremind/core/constants/app_colors.dart';
-import 'package:mediremind/core/constants/app_routes.dart';
-import 'package:mediremind/services/auth_service.dart';
-import 'package:mediremind/widgets/auth_shell.dart';
+import 'package:sante_app/core/constants/secret_questions.dart';
+import 'package:sante_app/core/constants/app_colors.dart';
+import 'package:sante_app/core/constants/app_routes.dart';
+import 'package:sante_app/services/auth_service.dart';
+import 'package:sante_app/ui/widgets/auth_shell.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -316,3 +316,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
+

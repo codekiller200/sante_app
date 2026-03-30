@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:mediremind/core/constants/app_colors.dart';
-import 'package:mediremind/core/constants/app_routes.dart';
-import 'package:mediremind/services/alarm_guard_service.dart';
-import 'package:mediremind/services/alarm_service.dart';
-import 'package:mediremind/services/app_launch_service.dart';
-import 'package:mediremind/widgets/app_logo.dart';
+import 'package:sante_app/core/constants/app_colors.dart';
+import 'package:sante_app/core/constants/app_routes.dart';
+import 'package:sante_app/services/alarm_guard_service.dart';
+import 'package:sante_app/services/alarm_service.dart';
+import 'package:sante_app/services/app_launch_service.dart';
+import 'package:sante_app/ui/widgets/app_logo.dart';
 
 class AlarmSetupScreen extends StatefulWidget {
   const AlarmSetupScreen({
@@ -317,3 +317,4 @@ class _StatusTile extends StatelessWidget {
     );
   }
 }
+

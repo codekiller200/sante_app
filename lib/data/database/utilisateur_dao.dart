@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 
-import 'package:mediremind/data/database/database_helper.dart';
-import 'package:mediremind/models/utilisateur.dart';
+import 'package:sante_app/data/database/database_helper.dart';
+import 'package:sante_app/data/models/utilisateur.dart';
 
 class UtilisateurDao {
   Future<Database> get _db async => DatabaseHelper.instance.database;
@@ -95,3 +95,4 @@ class UtilisateurDao {
     );
   }
 }
+

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'package:mediremind/core/constants/app_colors.dart';
-import 'package:mediremind/core/constants/app_routes.dart';
-import 'package:mediremind/data/repositories/medicament_repository.dart';
-import 'package:mediremind/models/medicament.dart';
-import 'package:mediremind/services/notification_service.dart';
+import 'package:sante_app/core/constants/app_colors.dart';
+import 'package:sante_app/core/constants/app_routes.dart';
+import 'package:sante_app/data/repositories/medicament_repository.dart';
+import 'package:sante_app/data/models/medicament.dart';
+import 'package:sante_app/services/notification_service.dart';
 
 class MedicamentFormScreen extends StatefulWidget {
   const MedicamentFormScreen({super.key, this.medicamentId});
@@ -360,3 +360,4 @@ class _FieldLabel extends StatelessWidget {
     );
   }
 }
+

@@ -1,17 +1,17 @@
 import 'package:go_router/go_router.dart';
 
-import 'package:mediremind/screens/auth/forgot_password_screen.dart';
-import 'package:mediremind/screens/auth/login_screen.dart';
-import 'package:mediremind/screens/auth/pin_screen.dart';
-import 'package:mediremind/screens/auth/register_screen.dart';
-import 'package:mediremind/screens/alarm_setup_screen.dart';
-import 'package:mediremind/screens/home_screen.dart';
-import 'package:mediremind/screens/journal_screen.dart';
-import 'package:mediremind/screens/medicament_form_screen.dart';
-import 'package:mediremind/screens/medicament_list_screen.dart';
-import 'package:mediremind/screens/profile_screen.dart';
-import 'package:mediremind/screens/splash_screen.dart';
-import 'package:mediremind/services/auth_service.dart';
+import 'package:sante_app/ui/screens/auth/forgot_password_screen.dart';
+import 'package:sante_app/ui/screens/auth/login_screen.dart';
+import 'package:sante_app/ui/screens/auth/pin_screen.dart';
+import 'package:sante_app/ui/screens/auth/register_screen.dart';
+import 'package:sante_app/ui/screens/alarm_setup_screen.dart';
+import 'package:sante_app/ui/screens/home_screen.dart';
+import 'package:sante_app/ui/screens/journal_screen.dart';
+import 'package:sante_app/ui/screens/medicament_form_screen.dart';
+import 'package:sante_app/ui/screens/medicament_list_screen.dart';
+import 'package:sante_app/ui/screens/profile_screen.dart';
+import 'package:sante_app/ui/screens/splash_screen.dart';
+import 'package:sante_app/services/auth_service.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -117,3 +117,4 @@ class AppRoutes {
     );
   }
 }
+

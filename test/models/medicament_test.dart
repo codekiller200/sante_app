@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mediremind/models/medicament.dart';
+import 'package:sante_app/data/models/medicament.dart';
 
 void main() {
   group('Medicament', () {
