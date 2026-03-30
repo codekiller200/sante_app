@@ -2,11 +2,12 @@ class Medicament {
   final int? id;
   final String nom;
   final String dosage;
-  final String icone;           // ex: "💊"
-  final int frequenceParJour;   // 1, 2, 3...
-  final List<String> horaires;  // ex: ["08:00", "12:00", "20:00"]
-  final int stockActuel;        // nombre de comprimés restants
-  final int seuilAlerte;        // alerte si stock <= seuilAlerte jours
+  final String icone;
+  final int frequenceParJour;
+  final int intervalleJours;
+  final List<String> horaires;
+  final int stockActuel;
+  final int seuilAlerte;
   final bool estActif;
   final DateTime dateCreation;
 
@@ -16,6 +17,7 @@ class Medicament {
     required this.dosage,
     required this.icone,
     required this.frequenceParJour,
+    this.intervalleJours = 1,
     required this.horaires,
     required this.stockActuel,
     this.seuilAlerte = 7,
@@ -23,16 +25,13 @@ class Medicament {
     required this.dateCreation,
   });
 
-  // Jours restants selon stock et fréquence
   int get joursRestants {
     if (frequenceParJour <= 0) return 0;
     return (stockActuel / frequenceParJour).floor();
   }
 
-  // Vrai si le stock est bas
   bool get stockBas => joursRestants <= seuilAlerte;
 
-  // Convertir en Map pour sqflite
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -40,7 +39,8 @@ class Medicament {
       'dosage': dosage,
       'icone': icone,
       'frequence_par_jour': frequenceParJour,
-      'horaires': horaires.join(','),  // "08:00,12:00,20:00"
+      'intervalle_jours': intervalleJours,
+      'horaires': horaires.join(','),
       'stock_actuel': stockActuel,
       'seuil_alerte': seuilAlerte,
       'est_actif': estActif ? 1 : 0,
@@ -48,7 +48,6 @@ class Medicament {
     };
   }
 
-  // Créer depuis une Map sqflite
   factory Medicament.fromMap(Map<String, dynamic> map) {
     return Medicament(
       id: map['id'] as int?,
@@ -56,6 +55,7 @@ class Medicament {
       dosage: map['dosage'] as String,
       icone: map['icone'] as String,
       frequenceParJour: map['frequence_par_jour'] as int,
+      intervalleJours: (map['intervalle_jours'] as int?) ?? 1,
       horaires: (map['horaires'] as String).split(','),
       stockActuel: map['stock_actuel'] as int,
       seuilAlerte: map['seuil_alerte'] as int,
@@ -64,13 +64,13 @@ class Medicament {
     );
   }
 
-  // Copie avec modifications
   Medicament copyWith({
     int? id,
     String? nom,
     String? dosage,
     String? icone,
     int? frequenceParJour,
+    int? intervalleJours,
     List<String>? horaires,
     int? stockActuel,
     int? seuilAlerte,
@@ -83,6 +83,7 @@ class Medicament {
       dosage: dosage ?? this.dosage,
       icone: icone ?? this.icone,
       frequenceParJour: frequenceParJour ?? this.frequenceParJour,
+      intervalleJours: intervalleJours ?? this.intervalleJours,
       horaires: horaires ?? this.horaires,
       stockActuel: stockActuel ?? this.stockActuel,
       seuilAlerte: seuilAlerte ?? this.seuilAlerte,

@@ -3,41 +3,47 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // Bleus principaux
-  static const Color blue900 = Color(0xFF0A2540);
-  static const Color blue700 = Color(0xFF1A56DB);
-  static const Color blue500 = Color(0xFF3B82F6);
-  static const Color blue300 = Color(0xFF93C5FD);
-  static const Color blue100 = Color(0xFFDBEAFE);
-  static const Color blue50  = Color(0xFFEFF6FF);
+  static const navy = Color(0xFF12304A);
+  static const blue = Color(0xFF2E6CF6);
+  static const aqua = Color(0xFF31C6D4);
+  static const surface = Color(0xFFF5F8FC);
+  static const card = Colors.white;
+  static const text = Color(0xFF132238);
+  static const muted = Color(0xFF708198);
+  static const border = Color(0xFFDCE5F0);
+  static const success = Color(0xFF1FA971);
+  static const warning = Color(0xFFF2A53A);
+  static const danger = Color(0xFFE05555);
 
-  // Accent
-  static const Color teal    = Color(0xFF0EA5E9);
+  static const blue900 = navy;
+  static const blue700 = blue;
+  static const blue500 = blue;
+  static const blue300 = Color(0xFF9BC0FF);
+  static const blue100 = Color(0xFFDDEBFF);
+  static const blue50 = Color(0xFFF1F6FF);
+  static const teal = aqua;
+  static const green = success;
+  static const orange = warning;
+  static const red = danger;
+  static const gray900 = text;
+  static const gray600 = muted;
+  static const gray400 = Color(0xFF94A3B8);
+  static const gray200 = border;
+  static const gray100 = Color(0xFFF3F6FA);
+  static const white = Colors.white;
+  static const background = surface;
 
-  // Statuts
-  static const Color green   = Color(0xFF10B981);
-  static const Color orange  = Color(0xFFF59E0B);
-  static const Color red     = Color(0xFFEF4444);
-
-  // Neutres
-  static const Color gray900 = Color(0xFF111827);
-  static const Color gray600 = Color(0xFF4B5563);
-  static const Color gray400 = Color(0xFF9CA3AF);
-  static const Color gray200 = Color(0xFFE5E7EB);
-  static const Color gray100 = Color(0xFFF3F4F6);
-  static const Color white   = Color(0xFFFFFFFF);
-  static const Color background = Color(0xFFF0F4F8);
-
-  // Gradients
-  static const LinearGradient primaryGradient = LinearGradient(
+  static const heroGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [blue700, teal],
+    colors: [navy, Color(0xFF21528B)],
   );
 
-  static const LinearGradient darkGradient = LinearGradient(
+  static const accentGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [blue900, Color(0xFF0D3460)],
+    colors: [blue, aqua],
   );
+
+  static const darkGradient = heroGradient;
 }

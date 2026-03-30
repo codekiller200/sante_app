@@ -1,16 +1,15 @@
 import 'package:flutter/foundation.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
-import 'utilisateur_dao.dart';
+import 'package:mediremind/data/database/utilisateur_dao.dart';
 
 class DatabaseHelper {
   DatabaseHelper._();
   static final DatabaseHelper instance = DatabaseHelper._();
 
   static Database? _db;
-  // CORRECTION: version 2 pour déclencher la migration des nouvelles colonnes profil
-  static const int _version = 2;
+  static const int _version = 3;
   static const String _dbName = 'mediremind.db';
 
   Future<Database> get database async {
@@ -22,8 +21,7 @@ class DatabaseHelper {
     try {
       final dbPath = await getDatabasesPath();
       final path = join(dbPath, _dbName);
-      debugPrint('Database path: $path');
-      return await openDatabase(
+      return openDatabase(
         path,
         version: _version,
         onCreate: _onCreate,
@@ -36,7 +34,6 @@ class DatabaseHelper {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-    // Table utilisateurs — avec les nouvelles colonnes dès la création
     await db.execute('''
       CREATE TABLE utilisateurs (
         id                  INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,16 +55,17 @@ class DatabaseHelper {
 
     await db.execute('''
       CREATE TABLE medicaments (
-        id                INTEGER PRIMARY KEY AUTOINCREMENT,
-        nom               TEXT NOT NULL,
-        dosage            TEXT NOT NULL,
-        icone             TEXT NOT NULL,
+        id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+        nom                TEXT NOT NULL,
+        dosage             TEXT NOT NULL,
+        icone              TEXT NOT NULL,
         frequence_par_jour INTEGER NOT NULL,
-        horaires          TEXT NOT NULL,
-        stock_actuel      INTEGER NOT NULL DEFAULT 0,
-        seuil_alerte      INTEGER NOT NULL DEFAULT 7,
-        est_actif         INTEGER NOT NULL DEFAULT 1,
-        date_creation     TEXT NOT NULL
+        intervalle_jours   INTEGER NOT NULL DEFAULT 1,
+        horaires           TEXT NOT NULL,
+        stock_actuel       INTEGER NOT NULL DEFAULT 0,
+        seuil_alerte       INTEGER NOT NULL DEFAULT 7,
+        est_actif          INTEGER NOT NULL DEFAULT 1,
+        date_creation      TEXT NOT NULL
       )
     ''');
 
@@ -86,14 +84,17 @@ class DatabaseHelper {
     ''');
 
     await db.execute('CREATE INDEX idx_prises_date ON prises(date_prevue)');
-    await db
-        .execute('CREATE INDEX idx_prises_medicament ON prises(medicament_id)');
+    await db.execute('CREATE INDEX idx_prises_medicament ON prises(medicament_id)');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Migration v1 → v2 : ajout des colonnes profil
     if (oldVersion < 2) {
       await UtilisateurDao.migrerV2(db);
+    }
+    if (oldVersion < 3) {
+      await db.execute(
+        'ALTER TABLE medicaments ADD COLUMN intervalle_jours INTEGER NOT NULL DEFAULT 1',
+      );
     }
   }
 

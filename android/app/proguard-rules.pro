@@ -1,0 +1,13 @@
+-keep class io.flutter.app.** { *; }
+-keep class io.flutter.embedding.** { *; }
+-keep class io.flutter.plugin.** { *; }
+-keep class io.flutter.plugins.** { *; }
+-keep class io.flutter.util.** { *; }
+-keep class io.flutter.view.** { *; }
+
+-keep class com.dexterous.flutterlocalnotifications.** { *; }
+-keep class com.example.sante.AlarmActivity { *; }
+-keep class com.example.sante.AlarmReceiver { *; }
+-keep class com.example.sante.AlarmSoundPlayer { *; }
+-keep class com.example.sante.MainActivity { *; }
+-keep class com.example.sante.StopAlarmReceiver { *; }

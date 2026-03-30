@@ -1,5 +1,5 @@
 allprojects {
-    extra.set("android.ndkVersion", "27.3.13750724")
+extra.set("android.ndkVersion", "27.0.12077973")
     repositories {
         google()
         mavenCentral()

@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
-import '../models/utilisateur.dart';
-import 'database_helper.dart';
+
+import 'package:mediremind/data/database/database_helper.dart';
+import 'package:mediremind/models/utilisateur.dart';
 
 class UtilisateurDao {
   Future<Database> get _db async => DatabaseHelper.instance.database;
@@ -59,6 +60,16 @@ class UtilisateurDao {
     await db.update(
       'utilisateurs',
       {'password_hash': newHash},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> updateSecretAnswerHash(int id, String newHash) async {
+    final db = await _db;
+    await db.update(
+      'utilisateurs',
+      {'secret_answer_hash': newHash},
       where: 'id = ?',
       whereArgs: [id],
     );

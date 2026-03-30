@@ -64,7 +64,7 @@ class Utilisateur {
   factory Utilisateur.fromMap(Map<String, dynamic> map) {
     return Utilisateur(
       id: map['id'] as int?,
-      username: map['username'] as String,
+      username: map['username'] as String? ?? (throw ArgumentError('Missing username')),
       passwordHash: map['password_hash'] as String,
       secretQuestion: map['secret_question'] as String,
       secretAnswerHash: map['secret_answer_hash'] as String,
@@ -122,7 +122,7 @@ class Utilisateur {
   String get resumeUrgences {
     final parts = <String>[
       if (groupeSanguin != null && groupeSanguin!.isNotEmpty)
-        'Groupe ${groupeSanguin}',
+        'Groupe $groupeSanguin',
       if (allergies != null && allergies!.isNotEmpty) allergies!,
       if (antecedents != null && antecedents!.isNotEmpty) antecedents!,
     ];

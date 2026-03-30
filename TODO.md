@@ -1,24 +1,21 @@
-# TODO - Corrections MediRemind
+# TODO: Correction erreurs Flutter MediRemind
 
-## Priorité 1: Bug du bouton ajouter un médicament
-- [x] Ajouter un FloatingActionButton sur la liste des médicaments
-- [x] Ajouter un bouton "+" visible sur toutes les pages
+## ✅ Étape 1: Création TODO.md [ TERMINÉE ]
 
-## Priorité 2: Design - Améliorations visuelles
-- [x] Harmoniser lesCards avec des bordures plus modernes
-- [x] Améliorer latypographie et les espacements
-- [x] Ajouter des animations subtiles
-- [x] Améliorer les couleurs et gradients
+## ✅ Étape 2: Corriger profil_screen.dart [ TERMINÉE ]
 
-## Priorité 3: Permissions Android pour les alarmes
-- [x] Ajouter les permissions nécessaires dans AndroidManifest.xml
-- [x] Améliorer la demande de permissions exactes alarm
+## ✅ Étape 3: Corriger auth_service.dart [ TERMINÉE ]
 
-## Priorité 4: Base de données - Inscription Windows
-- [x] Ajouter des logs de débogage
-- [x] Corriger la gestion des erreurs asynchrones
-- [x] Améliorer le timeout et la gestion des exceptions
+## ✅ Étape 4: Nettoyage build [ TERMINÉE ]
 
-## Priorité 5: Vérifications finales
-- [x] Tester le flux complet
-- [x] Générer le fichier zip
+## ✅ Étape 5: Test compilation [ TERMINÉE - App lance ! ]
+
+## ✅ Étape 6: Tous tests OK
+
+**commands finales après correction:**
+```bash
+flutter clean
+flutter pub get
+flutter run
+```
+

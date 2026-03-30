@@ -1,5 +1,5 @@
-import '../models/medicament.dart';
-import 'database_helper.dart';
+import 'package:mediremind/data/database/database_helper.dart';
+import 'package:mediremind/models/medicament.dart';
 
 class MedicamentDao {
   final _db = DatabaseHelper.instance;

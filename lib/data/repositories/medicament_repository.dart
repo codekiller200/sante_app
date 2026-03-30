@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../models/medicament.dart';
-import '../database/medicament_dao.dart';
+import 'package:mediremind/data/database/medicament_dao.dart';
+import 'package:mediremind/models/medicament.dart';
 
 class MedicamentRepository extends ChangeNotifier {
   final _dao = MedicamentDao();

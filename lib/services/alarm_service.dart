@@ -1,21 +1,19 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
-/// Service de communication avec le code natif Android (AlarmManager).
-/// Le MethodChannel correspond à celui déclaré dans MainActivity.kt.
 class AlarmService {
   AlarmService._();
   static final AlarmService instance = AlarmService._();
 
   static const _channel = MethodChannel('com.example.sante/alarm');
 
-  /// Programme une alarme exacte via AlarmManager côté Android.
   Future<bool> programmerAlarme({
     required int id,
     required String titre,
     required String message,
     required int heure,
     required int minute,
+    required String soundType,
   }) async {
     try {
       final result = await _channel.invokeMethod<bool>('programmerAlarme', {
@@ -24,55 +22,129 @@ class AlarmService {
         'message': message,
         'heure': heure,
         'minute': minute,
+        'soundType': soundType,
       });
       return result ?? false;
     } on PlatformException catch (e) {
-      debugPrint('[AlarmService] programmerAlarme error: ${e.code} — ${e.message}');
+      debugPrint('[AlarmService] programmerAlarme error: ${e.code} - ${e.message}');
       return false;
     }
   }
 
-  /// Annule une alarme par son identifiant.
+  Future<bool> programmerAlarmeTimestamp({
+    required int id,
+    required String titre,
+    required String message,
+    required int triggerAtMillis,
+    required String soundType,
+  }) async {
+    try {
+      final result = await _channel.invokeMethod<bool>('programmerAlarmeTimestamp', {
+        'id': id,
+        'titre': titre,
+        'message': message,
+        'triggerAtMillis': triggerAtMillis,
+        'soundType': soundType,
+      });
+      return result ?? false;
+    } on PlatformException catch (e) {
+      debugPrint('[AlarmService] programmerAlarmeTimestamp error: ${e.code} - ${e.message}');
+      return false;
+    }
+  }
+
   Future<bool> annulerAlarme(int id) async {
     try {
       final result = await _channel.invokeMethod<bool>('annulerAlarme', {'id': id});
       return result ?? false;
     } on PlatformException catch (e) {
-      debugPrint('[AlarmService] annulerAlarme error: ${e.code} — ${e.message}');
+      debugPrint('[AlarmService] annulerAlarme error: ${e.code} - ${e.message}');
       return false;
     }
   }
 
-  /// Vérifie si la permission SCHEDULE_EXACT_ALARM est accordée (Android 12+).
+  Future<bool> stopActiveAlarm() async {
+    try {
+      final result = await _channel.invokeMethod<bool>('stopActiveAlarm');
+      return result ?? false;
+    } on PlatformException catch (e) {
+      debugPrint('[AlarmService] stopActiveAlarm error: ${e.code} - ${e.message}');
+      return false;
+    }
+  }
+
   Future<bool> verifierAutorisation() async {
     try {
       final result = await _channel.invokeMethod<bool>('verifierAutorisation');
       return result ?? false;
     } on PlatformException catch (e) {
-      debugPrint('[AlarmService] verifierAutorisation error: ${e.code} — ${e.message}');
+      debugPrint('[AlarmService] verifierAutorisation error: ${e.code} - ${e.message}');
       return false;
     }
   }
 
-  /// Annule toutes les alarmes programmées.
-  /// CORRECTION: appelle le code natif au lieu de retourner true sans rien faire.
   Future<bool> annulerToutesAlarmes() async {
     try {
       final result = await _channel.invokeMethod<bool>('annulerToutesAlarmes');
       return result ?? false;
     } on PlatformException catch (e) {
-      debugPrint('[AlarmService] annulerToutesAlarmes error: ${e.code} — ${e.message}');
+      debugPrint('[AlarmService] annulerToutesAlarmes error: ${e.code} - ${e.message}');
       return false;
     }
   }
 
-  /// Ouvre les paramètres système pour autoriser les alarmes exactes.
   Future<bool> ouvrirParametresAlarme() async {
     try {
       final result = await _channel.invokeMethod<bool>('ouvrirParametresAlarme');
       return result ?? false;
     } on PlatformException catch (e) {
-      debugPrint('[AlarmService] ouvrirParametresAlarme error: ${e.code} — ${e.message}');
+      debugPrint('[AlarmService] ouvrirParametresAlarme error: ${e.code} - ${e.message}');
+      return false;
+    }
+  }
+
+  Future<bool> demanderIgnorerOptimisationsBatterie() async {
+    try {
+      final result = await _channel.invokeMethod<bool>('demanderIgnorerOptimisationsBatterie');
+      return result ?? false;
+    } on PlatformException catch (e) {
+      debugPrint(
+        '[AlarmService] demanderIgnorerOptimisationsBatterie error: ${e.code} - ${e.message}',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> ignoreOptimisationsBatterieActive() async {
+    try {
+      final result = await _channel.invokeMethod<bool>('ignoreOptimisationsBatterieActive');
+      return result ?? false;
+    } on PlatformException catch (e) {
+      debugPrint(
+        '[AlarmService] ignoreOptimisationsBatterieActive error: ${e.code} - ${e.message}',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> ouvrirParametresBatterie() async {
+    try {
+      final result = await _channel.invokeMethod<bool>('ouvrirParametresBatterie');
+      return result ?? false;
+    } on PlatformException catch (e) {
+      debugPrint('[AlarmService] ouvrirParametresBatterie error: ${e.code} - ${e.message}');
+      return false;
+    }
+  }
+
+  Future<bool> ouvrirParametresArrierePlan() async {
+    try {
+      final result = await _channel.invokeMethod<bool>('ouvrirParametresArrierePlan');
+      return result ?? false;
+    } on PlatformException catch (e) {
+      debugPrint(
+        '[AlarmService] ouvrirParametresArrierePlan error: ${e.code} - ${e.message}',
+      );
       return false;
     }
   }
